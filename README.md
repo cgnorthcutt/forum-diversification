@@ -6,7 +6,7 @@
 Text ranking systems (e.g. Facebook post comments, Amazon product
 reviews, Reddit forums) are ubiquitous, yet many suffer from a common
 problem. When items (e.g. responses or comments) are ranked primarily by
-text content and rating (e.g. like/unlike, $\uparrow$/$\downarrow$, +/-,
+text content and rating (e.g. like/unlike, \( \uparrow \)/\( \downarrow \), +/-,
 etc.), then similar items tend to receive similar scores, often
 producing redundant items with similar ranking. For example, if “Great
 job!” is ranked first, then “Great job.” is likely to be ranked second.
@@ -20,7 +20,7 @@ In this paper, we develop an algorithm for forum comment ranking
 diversification using maximal marginal relevance (MMR) to linearly
 interpolate between the original item ranking (relevance) and the
 similarity of an item to higher-ranked items (diversity). A single
-parameter, $\lambda$, is used to adjust this trade-off. Item similarity
+parameter, \( \lambda \), is used to adjust this trade-off. Item similarity
 is captured using the cosine similarity of tf-idf bag of words
 representation, where each word is embedded using a word2vec model
 trained on a corpora of 100,000+ edX course discussion forum responses.
