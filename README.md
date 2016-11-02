@@ -1,8 +1,7 @@
 # Forum Ranking Diversification
 
 
-Abstract
-========
+### Abstract
 
 Text ranking systems (e.g. Facebook post comments, Amazon product
 reviews, Reddit forums) are ubiquitous, yet many suffer from a common
@@ -33,8 +32,7 @@ learners. Similarly to other diversification methods, we evaluate our
 model using an Amazon Mechanical Turk user study comparing our ranking
 and a baseline diversified ranking versus the original ranking.
 
-Corpora
-=======
+### Corpora
 
 Textual forum posts and replies will be obtained via web-scraping. A
 database for multiple MITx online edX courses will store the following
@@ -53,8 +51,7 @@ web-scraping. Instead we will weakly estimate the score using the
 current original ranking and assuming a uniform distribution of scores
 from 0 to 1.
 
-Baseline Measure
-================
+### Baseline Measure
 
 The baseline model is the same as the proposed model, except for the
 computation of item similarity. Instead of a computing the cosine
@@ -66,8 +63,7 @@ method is that it captures the similarity of “He was once very strong”
 and “The man used to have strength”, whereas the baseline model does
 not.
 
-Evaluation
-==========
+### Evaluation
 
 Given the time limitations of this project, we are unable to implement
 forum ranking diversification in a live course and measure the effect on
@@ -87,14 +83,12 @@ number of forum posts to consider, and whether to look at post
 diversification or reply diversification are all factors which are still
 to be determined.
 
-Report Link
-===========
+### Report Link
 
 The Google Doc containing updates can be found
 [here](https://docs.google.com/document/d/15mwOCX2Sg1KTpXNSMEgPv9FruaQfDvRVV0C9D9SOqhk/edit).
 
-Github Link
-===========
+### Github Link
 
 Our Github link can be found
 [here](https://github.mit.edu/cgn/forum-diversification).
