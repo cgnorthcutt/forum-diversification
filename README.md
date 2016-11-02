@@ -1,13 +1,8 @@
----
-author:
-- 'Curtis G. Northcutt, Kimberly A. Leon, Naichun Chen, Karson Ota'
-date: 'November, 1 2016'
-title: |
-    **edX Forum Ranking Diversification**\
-    NLP Project Proposal
----
+# Forum Ranking Diversification
 
-ss<span>article</span>
+
+Abstract
+========
 
 Text ranking systems (e.g. Facebook post comments, Amazon product
 reviews, Reddit forums) are ubiquitous, yet many suffer from a common
