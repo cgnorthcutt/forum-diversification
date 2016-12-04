@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[4]:
 
 from __future__ import absolute_import
 from __future__ import division
@@ -9,7 +9,7 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 
-# In[2]:
+# In[5]:
 
 import numpy as np
 import pandas as pd
@@ -23,9 +23,9 @@ from sklearn.mixture import BayesianGaussianMixture
 from sklearn.neighbors import NearestNeighbors
 
 
-# In[70]:
+# In[17]:
 
-# # Automate creation of gold data and gold matrix from 5 unique forum topics.
+# # Automate creation of training gold data and gold matrix from 5 unique forum topics.
 
 # # Useful topics
 
@@ -62,8 +62,44 @@ from sklearn.neighbors import NearestNeighbors
 
 # # Write to file
 # cols = ['thread_id_from_url', 'body', 'num_replies', 'body_length', 'sum_body_length_per_topic', 'num_responses', 'avg_response_length', 'topic_cluster']
-# pd.DataFrame(gold_matrix).to_csv("gold_matrix_for_HarvardX__HDS_3221_2X__1T2016.csv.gz", compression='gzip', index=False)
-# pd.DataFrame(df_gold, columns = cols).to_csv("gold_data_HarvardX__HDS_3221_2X__1T2016.csv.gz", compression='gzip', index=False)
+# pd.DataFrame(gold_matrix).to_csv("gold_matrix_train_HarvardX__HDS_3221_2X__1T2016.csv.gz", compression='gzip', index=False)
+# pd.DataFrame(df_gold, columns = cols).to_csv("gold_data_train_HarvardX__HDS_3221_2X__1T2016.csv.gz", compression='gzip', index=False)
+
+
+# In[18]:
+
+# # Automate creation of testing gold data and gold matrix from 5 unique forum topics.
+
+# topics = [
+#   "5717e338c997f905a30003b9",
+#   "5705e2e310e0fd1536000501",
+#   "571fe921c83713056c00033a",
+#   "5705e41281e07b0517000c22",
+#   "5702ad8b81e07b05170009fe",
+#   "570e668f6fcfa5053c0003cd",
+# ]
+
+# df_gold = df[df.thread_id_from_url.isin(topics)]
+# topic_map = dict(zip(topics, range(len(topics))))
+# df_gold["topic_cluster"] = df_gold.thread_id_from_url.apply(lambda x: topic_map[x])
+
+# from scipy.spatial.distance import pdist, squareform
+
+# gold_matrix = squareform(pdist(pd.DataFrame(df_gold.topic_cluster)))
+# for row in range(len(gold_matrix)):
+#   for col in range(len(gold_matrix)):
+#     if gold_matrix[row][col] == 0:
+#       gold_matrix[row][col] = 1
+#     else:
+#       gold_matrix[row][col] = 0
+      
+# # pickle.dump( gold_matrix, open( "gold_matrix_for_HarvardX__HDS_3221_2X__1T2016.p", "wb" ) )
+# # pickle.dump( df_gold, open( "gold_data_HarvardX__HDS_3221_2X__1T2016.p", "wb" ) )
+
+# # Write to file
+# cols = ['thread_id_from_url', 'body', 'num_replies', 'body_length', 'sum_body_length_per_topic', 'num_responses', 'avg_response_length', 'topic_cluster']
+# pd.DataFrame(gold_matrix).to_csv("gold_matrix_test_HarvardX__HDS_3221_2X__1T2016.csv.gz", compression='gzip', index=False)
+# pd.DataFrame(df_gold, columns = cols).to_csv("gold_data_test_HarvardX__HDS_3221_2X__1T2016.csv.gz", compression='gzip', index=False)
 
 
 # In[3]:
@@ -71,13 +107,13 @@ from sklearn.neighbors import NearestNeighbors
 pd.set_option('max_colwidth',5000)
 
 
-# In[4]:
+# In[7]:
 
 def remove_punctuation(text):
     return re.sub(ur"\p{P}+", "", text)
 
 
-# In[16]:
+# In[8]:
 
 def genWord2VecCommentEmbedding(w2v_model, comments_array, bigrams=True, verbose=True):
     '''Returns a matrix, each row is an embedding for a comment, each column is a dimension. Order is
@@ -138,9 +174,9 @@ vocab = np.array(pickle.load( open( "vocab_for_HarvardX__HDS_3221_2X__1T2016.p",
 np.shape(w2v_matrix)
 
 
-# In[8]:
+# In[10]:
 
-df = pd.read_csv('HarvardX__HDS_3221_2X__1T2016_scored_forum_responses_and_features.csv.gz', compression='gzip')
+df = pd.read_csv('../HarvardX__HDS_3221_2X__1T2016_scored_forum_responses_and_features.csv.gz', compression='gzip')
 topic_id = '5705e20881e07b74f500019d'
 X = df[df.thread_id_from_url==topic_id].body.values
 
