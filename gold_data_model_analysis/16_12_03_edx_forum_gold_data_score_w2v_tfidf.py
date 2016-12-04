@@ -51,7 +51,7 @@ test_comments = [
   "Jesus is awesome. I love Jesus and the holy book. I think God is amazing. I agree with religion",
   "Christ is great. I love Christ and the holy book. I think God is amazing. I agree with religion",
   "Christ is great. I love Christ and the holy book. I agree with religion",
-  "Donald Trump is a horrible man with tons of speakers and lightbuls and random things.",
+  "Donald Trump is a president with tons of electrical equipment and lightbulbs and random things.",
 ]
 
 
