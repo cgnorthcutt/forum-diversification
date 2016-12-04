@@ -13,7 +13,6 @@ from __future__ import print_function
 
 import numpy as np
 import pandas as pd
-from edx2bigquery.edx2bigquery.bigquery2pandas import util
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 from nltk.util import ngrams
