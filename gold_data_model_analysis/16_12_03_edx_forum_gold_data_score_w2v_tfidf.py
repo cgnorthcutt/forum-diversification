@@ -16,22 +16,20 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 from sklearn.preprocessing import normalize
+from sklearn.preprocessing import MinMaxScaler
+from scipy.stats import rankdata
 
 pd.set_option('max_colwidth',5000)
 
 
 # In[3]:
 
-# Load gold data
-gold_matrix = pd.read_csv('gold_matrix_for_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
-df_gold = pd.read_csv('gold_data_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
-
 # Load word2vec model for this specific course
-w2v_matrix = pickle.load( open( "w2v_matrix_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) )
-vocab = np.array(pickle.load( open( "vocab_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) ) )
+w2v_matrix = pickle.load( open( "../data/w2v_matrix_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) )
+vocab = np.array(pickle.load( open( "../data/vocab_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) ) )
 
 
-# In[117]:
+# In[4]:
 
 # Verify word2vec model works well (the following example should have cosine similarity near 1)
 
@@ -42,7 +40,7 @@ vocab = np.array(pickle.load( open( "vocab_for_HarvardX__HDS_3221_2X__1T2016.p",
 # np.dot(w2v_matrix[np.where(vocab == "queen")[0][0]], w2v_matrix[np.where(vocab == "king")[0][0]] - w2v_matrix[np.where(vocab == "man")[0][0]] + w2v_matrix[np.where(vocab == "woman")[0][0]] )
 
 
-# In[4]:
+# In[5]:
 
 test_comments = [
   "Jesus is great. I love Jesus and the holy book. I think God is amazing. I agree with religion",
@@ -55,29 +53,53 @@ test_comments = [
 ]
 
 
-# In[7]:
+# In[10]:
 
-# Get tfidf counts for each comment as a matrix C with shape (# comments, size of w2v vocab)
-vec = TfidfVectorizer(vocabulary=vocab)
-C = vec.fit_transform(df_gold.body.values)
+def embedding_tfidf(embedding_matrix, embedding_vocab, gold_data, gold_matrix, test_name):
+  # Get tfidf counts for each comment as a matrix C with shape (# comments, size of w2v (embedding) vocab)
+  vec = TfidfVectorizer(vocabulary=embedding_vocab)
+  C = vec.fit_transform(gold_data.body.values)
 
-# Compute tfidf bag of words for each comment as matrix A with shape (#comments, embedding dimension)
-A = C.dot(w2v_matrix)
-A = normalize(A, norm='l2')
+  # Compute tfidf bag of words for each comment as matrix A with shape (#comments, embedding dimension)
+  A = C.dot(embedding_matrix)
+  A = normalize(A, norm='l2')
 
-# Verify that each row of A is normalized (unit vector l2-norm)
-assert(abs(sum(np.sum(np.abs(A)**2,axis=-1)**(1./2)) / len(A) - 1.0) < 0.0001) # Should be close to 1.0
+  # Verify that each row of A is normalized (unit vector l2-norm)
+  assert(abs(sum(np.sum(np.abs(A)**2,axis=-1)**(1./2)) / len(A) - 1.0) < 0.0001) # Should be close to 1.0
 
-# We compute pairwise cosine similarity with dot product since A is normalized.
-pairwise_cosine_similarity = np.dot(A, A.transpose())
+  # We compute pairwise cosine similarity with dot product since A is normalized.
+  pairwise_cosine_similarity = np.dot(A, A.transpose())
+  pairwise_cosine_similarity = MinMaxScaler().fit_transform(pairwise_cosine_similarity)
 
-# Compute avg consine similarity for same cluster comments and different cluster topics and subtract.
-same_cluster_avg_score = np.multiply(pairwise_cosine_similarity, gold_matrix).values.sum() / gold_matrix.values.sum()
-diff_cluster_avg_score = np.multiply(pairwise_cosine_similarity, 1-gold_matrix).values.sum() / (1-gold_matrix).values.sum()
-print(same_cluster_avg_score, "-", diff_cluster_avg_score, "=", same_cluster_avg_score - diff_cluster_avg_score)
+  # Compute avg consine similarity for same cluster comments and different cluster topics and subtract.
+  same_cluster_avg_score = np.multiply(pairwise_cosine_similarity, gold_matrix).values.sum() / gold_matrix.values.sum()
+  diff_cluster_avg_score = np.multiply(pairwise_cosine_similarity, 1-gold_matrix).values.sum() / (1-gold_matrix).values.sum()
+  print(test_name, "score:", same_cluster_avg_score, "-", diff_cluster_avg_score, "=", same_cluster_avg_score - diff_cluster_avg_score)
+  
+  return pairwise_cosine_similarity
 
 
-# In[ ]:
+# In[11]:
+
+# Load gold train data
+gold_matrix_train = pd.read_csv('gold_matrix_train_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
+df_gold_train = pd.read_csv('gold_data_train_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
+pairwise_cosine_similarity_train = embedding_tfidf(w2v_matrix, vocab, df_gold_train, gold_matrix_train, "Train")
 
 
+# In[12]:
+
+# Load gold data
+gold_matrix_test = pd.read_csv('gold_matrix_test_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
+df_gold_test = pd.read_csv('gold_data_test_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
+pairwise_cosine_similarity_test =embedding_tfidf(w2v_matrix, vocab, df_gold_test, gold_matrix_test, "Test")
+
+
+# In[41]:
+
+from make_pairwise_gold_metric_scores import compute_metrics
+
+metrics = compute_metrics(pairwise_cosine_similarity_train, pairwise_cosine_similarity_test, gold_matrix_train, df_gold_train, gold_matrix_test, df_gold_test)
+pretty_metrics = pd.DataFrame(pd.Series(metrics), columns = ["Score"])
+pretty_metrics
 
