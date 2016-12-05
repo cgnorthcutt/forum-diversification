@@ -9,18 +9,22 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 
-# In[5]:
+# In[11]:
 
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 from scipy.stats import rankdata
+from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import RandomizedSearchCV
+from scipy.stats import randint as sp_randint
 import sys
 
 
-# In[1]:
+# In[ ]:
 
 def compute_metrics(pairwise_cosine_similarity_train, pairwise_cosine_similarity_test, gold_matrix_train, gold_data_train, gold_matrix_test, gold_data_test):
   
@@ -78,12 +82,41 @@ def compute_metrics(pairwise_cosine_similarity_train, pairwise_cosine_similarity
   # Metric 3: logreg_acc_pairwise_binary Binary Logistic Regression Accuracy
   # 
   
+  X_train = flat_cossim_train.reshape((int(npairs_train), 1))
+  y_train = flat_gold_train.reshape((int(npairs_train), ))
+  X_test = flat_cossim_test.reshape((int(npairs_test), 1))
+  y_test = flat_gold_test.reshape((int(npairs_test), ))
+  
   clf = LogisticRegression()
-  clf.fit(flat_cossim_train.reshape((int(npairs_train), 1)), flat_gold_train.reshape((int(npairs_train), 1)))
-  y_pred = clf.predict(flat_cossim_test.reshape((int(npairs_test), 1)))
-  acc = accuracy_score(y_true = flat_gold_test, y_pred = y_pred)
+  clf.fit(X_train, y_train)
+  y_pred = clf.predict(X_test)
+  acc = accuracy_score(y_true = y_test, y_pred = y_pred)
   metrics["logreg_acc_pairwise_binary"] = acc
   print("Pairwise Binary Logistic Regression Accuracy score:", acc)
+  print("\nThe next test uses parameter optimization over a random forest\nclassifier's parameters and may take 30s to 2 min to run.\n")
+  sys.stdout.flush()
+  
+  #
+  # Metric 4: random_forest_acc_pairwise_binary Binary Random Forest Accuracy
+  # 
+  
+  clf = RandomForestClassifier(n_jobs=8)
+  # specify parameters and distributions to sample from
+  param_dist = {#"n_estimators": sp_randint(10, 20),
+                "max_depth": [3, None],
+                #"max_features": sp_randint(1, 11),
+                "min_samples_split": sp_randint(1, 11),
+                "min_samples_leaf": sp_randint(1, 11),
+                "bootstrap": [True, False],
+                "criterion": ["gini", "entropy"]}
+
+  # run randomized search, n_iter trials
+  best_clf = RandomizedSearchCV(clf, param_distributions=param_dist, n_iter=5)
+  best_clf.fit(X_train, y_train)
+  y_pred = best_clf.predict(X_test)
+  acc = accuracy_score(y_true = y_test, y_pred = y_pred)
+  metrics["random_forest_acc_pairwise_binary"] = acc
+  print("Pairwise Binary Random Forest Accuracy score:", acc)
   sys.stdout.flush()
   
 #   #
@@ -99,4 +132,9 @@ def compute_metrics(pairwise_cosine_similarity_train, pairwise_cosine_similarity
 #   sys.stdout.flush()
   
   return metrics
+
+
+# In[ ]:
+
+
 
