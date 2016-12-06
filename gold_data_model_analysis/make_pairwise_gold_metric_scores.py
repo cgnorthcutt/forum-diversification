@@ -46,25 +46,25 @@ def compute_metrics(pairwise_cosine_similarity_train, pairwise_cosine_similarity
   
   metrics = {}
   
-  #
-  # Metric 1: avg_diff (Average difference of cossine similarity for gold score classes)
-  #
+#   #
+#   # Metric 0: avg_diff (Average difference of cossine similarity for gold score classes)
+#   #
   
-  # Compute avg consine similarity for same cluster comments and different cluster topics and subtract.
-  same_cluster_avg_score = np.multiply(pairwise_cosine_similarity_test, gold_matrix_test).sum() / gold_matrix_test.sum()
-  diff_cluster_avg_score = np.multiply(pairwise_cosine_similarity_test, 1-gold_matrix_test).sum() / (1-gold_matrix_test).sum()
-  metrics["avg_diff"] = same_cluster_avg_score - diff_cluster_avg_score
-  print("Avg Difference score:", same_cluster_avg_score, "-", diff_cluster_avg_score, "=", metrics["avg_diff"])
+#   # Compute avg consine similarity for same cluster comments and different cluster topics and subtract.
+#   same_cluster_avg_score = np.multiply(pairwise_cosine_similarity_test, gold_matrix_test).sum() / gold_matrix_test.sum()
+#   diff_cluster_avg_score = np.multiply(pairwise_cosine_similarity_test, 1-gold_matrix_test).sum() / (1-gold_matrix_test).sum()
+#   metrics["avg_diff"] = same_cluster_avg_score - diff_cluster_avg_score
+#   print("Avg Difference score:", same_cluster_avg_score, "-", diff_cluster_avg_score, "=", metrics["avg_diff"])
   
-  #
-  # Metric 1: median_diff (Median difference of cossine similarity for gold score classes)
-  #
+#   #
+#   # Metric 1: median_diff (Median difference of cossine similarity for gold score classes)
+#   #
   
-  gold0_values = flat_cossim_test[flat_gold_test == 0]
-  gold1_values = flat_cossim_test[flat_gold_test == 1]
-  np.median(gold1_values) - np.median(gold0_values)
-  metrics["median_diff"] = np.median(gold1_values) - np.median(gold0_values)
-  print("Median Difference score:", np.median(gold1_values), "-", np.median(gold0_values), "=", metrics["median_diff"])
+#   gold0_values = flat_cossim_test[flat_gold_test == 0]
+#   gold1_values = flat_cossim_test[flat_gold_test == 1]
+#   np.median(gold1_values) - np.median(gold0_values)
+#   metrics["median_diff"] = np.median(gold1_values) - np.median(gold0_values)
+#   print("Median Difference score:", np.median(gold1_values), "-", np.median(gold0_values), "=", metrics["median_diff"])
   
   #
   # Metric 2: median_quantile_diff (Median normalized rank difference of cossine similarity for gold score classes)
