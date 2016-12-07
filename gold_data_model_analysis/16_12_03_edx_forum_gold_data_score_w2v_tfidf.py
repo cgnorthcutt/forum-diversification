@@ -17,19 +17,19 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 from sklearn.preprocessing import normalize
 from sklearn.preprocessing import MinMaxScaler
-from scipy.stats import rankdata
+from make_pairwise_gold_metric_scores import compute_metrics 
 
 pd.set_option('max_colwidth',5000)
 
 
-# In[3]:
+# In[6]:
 
 # Load word2vec model for this specific course
 w2v_matrix = pickle.load( open( "../data/w2v_matrix_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) )
 vocab = np.array(pickle.load( open( "../data/vocab_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) ) )
 
 
-# In[4]:
+# In[7]:
 
 # Verify word2vec model works well (the following example should have cosine similarity near 1)
 
@@ -40,7 +40,7 @@ vocab = np.array(pickle.load( open( "../data/vocab_for_HarvardX__HDS_3221_2X__1T
 # np.dot(w2v_matrix[np.where(vocab == "queen")[0][0]], w2v_matrix[np.where(vocab == "king")[0][0]] - w2v_matrix[np.where(vocab == "man")[0][0]] + w2v_matrix[np.where(vocab == "woman")[0][0]] )
 
 
-# In[5]:
+# In[8]:
 
 test_comments = [
   "Jesus is great. I love Jesus and the holy book. I think God is amazing. I agree with religion",
@@ -53,11 +53,11 @@ test_comments = [
 ]
 
 
-# In[5]:
+# In[9]:
 
 def embedding_tfidf(embedding_matrix, embedding_vocab, gold_data, gold_matrix, test_name):
   # Get tfidf counts for each comment as a matrix C with shape (# comments, size of w2v (embedding) vocab)
-  vec = TfidfVectorizer(vocabulary=embedding_vocab)
+  vec = TfidfVectorizer(vocabulary=embedding_vocab, stop_words='english')
   C = vec.fit_transform(gold_data.body.values)
 
   # Compute tfidf bag of words for each comment as matrix A with shape (#comments, embedding dimension)
@@ -79,7 +79,7 @@ def embedding_tfidf(embedding_matrix, embedding_vocab, gold_data, gold_matrix, t
   return pairwise_cosine_similarity
 
 
-# In[6]:
+# In[10]:
 
 # Load gold train data
 gold_matrix_train = pd.read_csv('gold_matrix_train_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
@@ -87,7 +87,7 @@ df_gold_train = pd.read_csv('gold_data_train_HarvardX__HDS_3221_2X__1T2016.csv.g
 pairwise_cosine_similarity_train = embedding_tfidf(w2v_matrix, vocab, df_gold_train, gold_matrix_train, "Train")
 
 
-# In[7]:
+# In[11]:
 
 # Load gold data
 gold_matrix_test = pd.read_csv('gold_matrix_test_HarvardX__HDS_3221_2X__1T2016.csv.gz', compression='gzip')
@@ -95,25 +95,23 @@ df_gold_test = pd.read_csv('gold_data_test_HarvardX__HDS_3221_2X__1T2016.csv.gz'
 pairwise_cosine_similarity_test =embedding_tfidf(w2v_matrix, vocab, df_gold_test, gold_matrix_test, "Test")
 
 
-# In[18]:
-
-import make_pairwise_gold_metric_scores
-reload(make_pairwise_gold_metric_scores)
-from make_pairwise_gold_metric_scores import compute_metrics
-
-
-# In[20]:
+# In[12]:
 
 metrics = compute_metrics(pairwise_cosine_similarity_train, pairwise_cosine_similarity_test, gold_matrix_train, df_gold_train, gold_matrix_test, df_gold_test)
 pretty_metrics = pd.DataFrame(pd.Series(metrics), columns = ["Score"])
 pretty_metrics
 
 
-# In[19]:
+# In[13]:
 
 # Switching train and test
 
 metrics = compute_metrics(pairwise_cosine_similarity_test, pairwise_cosine_similarity_train, gold_matrix_test, df_gold_test, gold_matrix_train, df_gold_train)
 pretty_metrics = pd.DataFrame(pd.Series(metrics), columns = ["Score"])
 pretty_metrics
+
+
+# In[ ]:
+
+
 
