@@ -2,6 +2,7 @@
 gold_data_model_analysis/.ipynb_checkpoints/
 clustering_analysis/.ipynb_checkpoints/
 .ipynb_checkpoints
+*.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
