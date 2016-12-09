@@ -28,13 +28,13 @@ from sklearn.neighbors import NearestNeighbors
 pd.set_option('max_colwidth',5000)
 
 
-# In[7]:
+# In[4]:
 
 def remove_punctuation(text):
     return re.sub(ur"\p{P}+", "", text)
 
 
-# In[8]:
+# In[5]:
 
 def genWord2VecCommentEmbedding(w2v_model, comments_array, bigrams=True, verbose=True):
     '''Returns a matrix, each row is an embedding for a comment, each column is a dimension. Order is
@@ -82,7 +82,7 @@ def genWord2VecCommentEmbedding(w2v_model, comments_array, bigrams=True, verbose
     return A
 
 
-# In[29]:
+# In[6]:
 
 # w2v_matrix = pickle.load( open( "/Users/cgn/Dropbox (MIT)/cgn/bq/w2v_matrix.p", "rb" ) )
 # vocab = np.array(pickle.load( open( "/Users/cgn/Dropbox (MIT)/cgn/bq/word.p", "rb" ) ) )
@@ -90,11 +90,16 @@ def genWord2VecCommentEmbedding(w2v_model, comments_array, bigrams=True, verbose
 # vocab = np.array(pickle.load( open( "vocab_for_HarvardX__HDS_3221_2X__1T2016.p", "rb" ) ) )
 
 
-# In[14]:
+# In[7]:
 
 df = pd.read_csv('../data//HarvardX__HDS_3221_2X__1T2016_scored_forum_responses_and_features.csv.gz', compression='gzip')
 topic_id = '5705e20881e07b74f500019d'
 X = df[df.thread_id_from_url==topic_id].body.values
+
+
+# In[8]:
+
+df.head()
 
 
 # In[10]:
