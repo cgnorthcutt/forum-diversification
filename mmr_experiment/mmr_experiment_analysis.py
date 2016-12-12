@@ -6,7 +6,7 @@
 get_ipython().magic(u'matplotlib inline')
 
 
-# In[194]:
+# In[227]:
 
 import pandas as pd
 import numpy as np
@@ -26,19 +26,19 @@ font = {'family' : 'STIXGeneral',
 matplotlib.rc('font', **font)
 
 from matplotlib import rc
-rc('text', usetex=False)
+rc('text', usetex=True)
 
 matplotlib.rcParams['mathtext.fontset'] = 'stix'
 matplotlib.rcParams['font.family'] = 'STIXGeneral'
 
 
-# In[3]:
+# In[242]:
 
 users = ["naichun", "karson", "kim"]
 experiments = ["inclusion","diverse","redundant"]
 
 
-# In[66]:
+# In[243]:
 
 # Since trials were randomized, re-construct the indices for trials to map trials together across users
 
@@ -60,7 +60,7 @@ naichun_index = [txt2index.get(" ".join(lines3[i*lines_per_trial:(i+1)*lines_per
 naichun_index[-1] = 28 # Fixes error in last entry
 
 
-# In[67]:
+# In[244]:
 
 # Fetch results from csv files and combine
 mmr_results = []
@@ -74,14 +74,14 @@ for user in users:
 mmr_results = pd.concat(mmr_results, ignore_index=True) # Combines list of dataframes into single dataframe
 
 
-# In[68]:
+# In[245]:
 
 # Modify two errors in the data.
-mmr_results.ix[99] = ["B", "B", "A", "baseline", "mmr", "0.75", "naichun"]
-mmr_results.ix[72] = ["A", "A", "B", "mmr", "baseline", "0.75", "naichun"]
+mmr_results.ix[99] = ["B", "B", "A", "baseline", "mmr", 0.75, "naichun"]
+mmr_results.ix[72] = ["A", "A", "B", "mmr", "baseline", 0.75, "naichun"]
 
 
-# In[69]:
+# In[246]:
 
 # Map A and B (blinded trials) to actual values.
 mmr_results["mapping"] = mmr_results[["A","B"]].T.to_dict().values()
@@ -89,7 +89,7 @@ mmr_results[experiments] = mmr_results[["inclusion","diverse","redundant", "mapp
 mmr_results = mmr_results[["inclusion","diverse","redundant", "mmr_lambda", "user"]]
 
 
-# In[70]:
+# In[247]:
 
 # Re-arrange each users trials so that results are in the same order.
 sorted_mmr_results = []
@@ -101,14 +101,14 @@ for user in users:
 mmr_results = pd.concat(sorted_mmr_results)
 
 
-# In[71]:
+# In[248]:
 
 # Store results as csv
 mmr_results.to_csv("mmr_results.csv.gz", compression="gzip", index=False)
 mmr_results = pd.read_csv("mmr_results.csv.gz", compression="gzip")
 
 
-# In[160]:
+# In[251]:
 
 # Aggregater results per lambda and per user.
 final_per_user = []
@@ -135,7 +135,7 @@ df_concat["Rater"] = [1,1,1,2,2,2,3,3,3]
 df_concat['Experiment'] = [2,1,3] * 3
 
 
-# In[226]:
+# In[254]:
 
 # Plot final results
 color_map = {0.25:"blue", 0.75:"red"}
@@ -149,14 +149,14 @@ for mmr_lambda in df_means.columns:
   plt.errorbar([1,2,3], avg, yerr=std, fmt='none', linewidth=10, alpha=alpha, ecolor = color_map[mmr_lambda])
   #plt.fill_between([1,2,3], avg-std, avg+std, alpha=alpha)
   plt.xticks([1,2,3], avg.index)
-plt.legend(bbox_to_anchor=(1.4, .5), loc = 5, fontsize=40, title="Lambda")
+plt.legend(bbox_to_anchor=(1.4, .5), loc = 5, fontsize=40, title=r"\lambda")
 plt.tick_params(axis='both', which='both', labelsize=40)
 plt.title("Fraction of Responses Choosing\nMMR Ranking (versus Baseline)", fontsize=40)
 plt.xlabel("Experiment", fontsize=40)
 plt.savefig("mmr_figure.pdf", dpi=300, bbox_inches='tight')
 
 
-# In[13]:
+# In[255]:
 
 # Produce final latex table for paper
 final = []
@@ -177,17 +177,17 @@ final["fraction_mmr"] = final["fraction_mmr"].apply(lambda x: round(x, 2))
 print final.to_latex()
 
 
-# In[29]:
+# In[256]:
 
 # Compute inter-rater reliablity
 
 
-# In[43]:
+# In[257]:
 
 from sklearn.metrics import cohen_kappa_score
 
 
-# In[59]:
+# In[260]:
 
 df_cohen = mmr_results.set_index(["user"])
 cohen = {}
@@ -197,10 +197,10 @@ for exp in experiments:
       cohen[exp, name1] = [cohen_kappa_score(df_cohen.ix[name1][exp], df_cohen.ix[name2][exp]) for name2 in mmr_results.user.unique() if name1 != name2]
       
 print pd.DataFrame(cohen, index=["other1", "other2"]).transpose().to_latex()
-pd.DataFrame(cohen, index=["other1", "other2"])
+pd.DataFrame(cohen, index=["other1", "other2"]).transpose()
 
 
-# In[57]:
+# In[261]:
 
 # Compute fraction agreement
 df_cohen = mmr_results.set_index(["user"])
@@ -211,7 +211,7 @@ for exp in experiments:
       agreement[exp, name1] = [acc(df_cohen.ix[name1][exp], df_cohen.ix[name2][exp]) for name2 in mmr_results.user.unique() if name1 != name2]
 
 print pd.DataFrame(agreement, index=["other1", "other2"]).transpose().to_latex()
-pd.DataFrame(agreement, index=["other1", "other2"])
+pd.DataFrame(agreement, index=["other1", "other2"]).transpose()
 
 
 # In[ ]:
