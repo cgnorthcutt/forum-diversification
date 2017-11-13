@@ -26,7 +26,7 @@ If you find this repo or the paper helpful, please cite us:
 } 
 ```
 
-### Abstract
+### Why diversify?
 
 Text ranking systems (e.g. Facebook post comments, Amazon product
 reviews, Reddit forums) are ubiquitous, yet many suffer from a common
@@ -47,15 +47,13 @@ interpolate between the original item ranking (relevance) and the
 similarity of an item to higher-ranked items (diversity). A single
 parameter, λ, is used to adjust this trade-off. Item similarity
 is captured using the cosine similarity of tf-idf bag of words
-representation, where each word is embedded using a word2vec model
+representation, where each word is embedded using a PCA+TFIDF embedding model
 trained on a corpora of 100,000+ edX course discussion forum responses.
 We apply our model to the forum discussions of an online course, MITx
 6.00.1x, where capturing the diversity of responses may be of high
 importance to debunk misconceptions held by the majority of forum
 respondents and to capture the diversity of posts across thousands of
-learners. Similarly to other diversification methods, we evaluate our
-model using an Amazon Mechanical Turk user study comparing our ranking
-and a baseline diversified ranking versus the original ranking.
+learners. 
 
 ### Corpora
 
@@ -72,48 +70,20 @@ columns:
 4.  original comment rank.
 
 Original comment scores (number of likes) cannot be inferred via
-web-scraping. Instead we will weakly estimate the score using the
+web-scraping. Instead we weakly estimate the score using the
 current original ranking and assuming a uniform distribution of scores
 from 0 to 1.
 
 ### Baseline Measure
 
-The baseline model is the same as the proposed model, except for the
-computation of item similarity. Instead of a computing the cosine
-similarity of word2vec bag of words tf-idf representations, we use the
-ratio of words in common to unique words as the similarity score. This
-baseline approach does not take into account the semantic space of the
-text, only the individual token components. The power of our proposed
-method is that it captures the similarity of “He was once very strong”
-and “The man used to have strength”, whereas the baseline model does
-not.
+The baseline model simply ranks comments by their number of replies and upvotes.
 
 ### Evaluation
 
-Given the time limitations of this project, we are unable to implement
-forum ranking diversification in a live course and measure the effect on
-learning outcomes using an AB test experiment. Instead, we use a
-Mechanical Turk experiment where half the users are given the first five
-items of the baseline ranking versus the original ranking and asked
-“Which list of five items contains more diverse responses (differs more
-in content, ideas, and/or meaning)?” We then ask the same question for
-the first five items of our model’s ranking versus the original ranking.
-As the final evaluation, we compare the improvement of our model versus
-the improvement of the baseline model, for a set of forum posts, using a
-matched pairs t-test.
-
-Whether to include known cases (to verify Mechanical Turk users are
-answering correctly), the number of users who see each ranking, the
-number of forum posts to consider, and whether to look at post
-diversification or reply diversification are all factors which are still
-to be determined.
-
-### Report Link
-
-The Google Doc containing updates can be found
-[here](https://docs.google.com/document/d/15mwOCX2Sg1KTpXNSMEgPv9FruaQfDvRVV0C9D9SOqhk/edit).
-
-### Github Link
-
-Our Github link can be found
-[here](https://github.mit.edu/cgn/forum-diversification).
+We measure the effect on learning outcomes using a double-blind experiment 
+with 300 tests across 3 reviewers. Reviewers are asked to answer 3 questions between two
+rankings, one of which has secretely been ordered by our algorithm. Questions focus on
+(1) diversity, (2) redundancy, (3) inclusion of the content of another comment in the forum.
+Cohen's cappa is used to show inter-rater reliability. For all three questions,
+reviewers selected our algorithm's ordering of the comments by a significant margin
+for all three questions.
