@@ -1,5 +1,30 @@
 # Forum Ranking Diversification
 
+### News!
+
+Published in Learning@Scale 2017. Paper: https://dl.acm.org/citation.cfm?id=3054016
+
+If you find this repo or the paper helpful, please cite us:
+
+```
+@inproceedings{Northcutt:2017:CRD:3051457.3054016,
+ author = {Northcutt, Curtis G. and Leon, Kimberly A. and Chen, Naichun},
+ title = {Comment Ranking Diversification in Forum Discussions},
+ booktitle = {Proceedings of the Fourth (2017) ACM Conference on Learning @ Scale},
+ series = {L@S '17},
+ year = {2017},
+ isbn = {978-1-4503-4450-0},
+ location = {Cambridge, Massachusetts, USA},
+ pages = {327--330},
+ numpages = {4},
+ url = {http://doi.acm.org/10.1145/3051457.3054016},
+ doi = {10.1145/3051457.3054016},
+ acmid = {3054016},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {discussion forum, embeddings, information retrieval, online courses, ranking diversification, search},
+} 
+```
 
 ### Abstract
 
