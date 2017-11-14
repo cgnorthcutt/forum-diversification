@@ -62,11 +62,8 @@ database for multiple MITx online edX courses will store the following
 columns:
 
 1.  username
-
 2.  comment\_text
-
 3.  comment\_type (reply or post)
-
 4.  original comment rank.
 
 Original comment scores (number of likes) cannot be inferred via
