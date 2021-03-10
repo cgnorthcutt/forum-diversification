@@ -1,4 +1,4 @@
-# Forum Ranking Diversification
+# Fairness through Diversification to Reduce the Effects of Majority Bias
 
 ### News!
 
